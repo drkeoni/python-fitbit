@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import sys
 import datetime
 import json
 import requests
+import logging
 
 try:
     from urllib.parse import urlencode
@@ -15,6 +17,8 @@ from requests_oauthlib import OAuth2Session
 from . import exceptions
 from .compliance import fitbit_compliance_fix
 from .utils import curry
+
+log = logging.getLogger()
 
 
 class FitbitOauth2Client(object):
@@ -85,6 +89,8 @@ class FitbitOauth2Client(object):
 
         https://dev.fitbit.com/docs/oauth2/#authorization-errors
         """
+        log.debug('make_request: {}, data={}, method={}'.format(url, data, method))
+        #print('make_request: {}, data={}, method={}'.format(url, data, method),file=sys.stderr)
         data = data or {}
         method = method or ('POST' if data else 'GET')
         response = self._request(
@@ -538,7 +544,7 @@ class Fitbit(object):
                                  % ','.join(Fitbit.PERIODS))
             end = period
 
-        url = "{0}/{1}/user/{2}/{resource}/date/{base_date}/{end}.json".format(
+        url = "{0}/{1}/user/{2}/activities/{resource}/date/{base_date}/{end}.json".format(
             *self._get_common_args(user_id),
             resource=resource,
             base_date=self._get_date_string(base_date),
